@@ -34,7 +34,7 @@ public class TicketServiceTest {
         TicketTypeRequest adultRequest = new TicketTypeRequest(TicketTypeRequest.Type.ADULT, 1);
 
         ticketService.purchaseTickets(accountId, adultRequest);
-        
+
         // Verify that the payment service was called with the correct amount (1 Adult = £25)
         verify(paymentService).makePayment(accountId, 25);
 
@@ -105,6 +105,18 @@ public class TicketServiceTest {
 
         assertThrows(InvalidPurchaseException.class, () -> 
             ticketService.purchaseTickets(accountId, zeroAdults)
+        );
+
+        verifyNoInteractions(paymentService, reservationService);
+    }
+
+    @Test
+    void testInvalidAccountIdThrowsException() {
+        Long invalidAccountId = 0L;
+        TicketTypeRequest adultRequest = new TicketTypeRequest(TicketTypeRequest.Type.ADULT, 1);
+
+        assertThrows(InvalidPurchaseException.class, () -> 
+            ticketService.purchaseTickets(invalidAccountId, adultRequest)
         );
 
         verifyNoInteractions(paymentService, reservationService);
